@@ -1,3 +1,44 @@
+// عرض واجهة إنشاء حساب جديد
+function showRegister() {
+    document.querySelector('.login-container').style.display = 'none';
+    document.getElementById('register-container').style.display = 'block';
+}
+
+// عرض واجهة تسجيل الدخول
+function showLogin() {
+    document.querySelector('.login-container').style.display = 'block';
+    document.getElementById('register-container').style.display = 'none';
+}
+
+// إنشاء حساب جديد
+function register() {
+    const username = document.getElementById('new-username').value;
+    const password = document.getElementById('new-password').value;
+
+    if (username && password && password.length >= 8) {
+        localStorage.setItem(username, password);
+        alert('تم إنشاء الحساب بنجاح!');
+        showLogin();
+    } else {
+        alert('الرجاء إدخال اسم مستخدم وكلمة مرور صحيحة (8 أحرف أو أرقام).');
+    }
+}
+
+// تسجيل الدخول
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const storedPassword = localStorage.getItem(username);
+
+    if (storedPassword === password) {
+        localStorage.setItem('currentUser', username);
+        window.location.href = 'main.html'; // الانتقال للصفحة الرئيسية
+    } else {
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة.');
+    }
+}
+
 // بيانات المستخدم
 let currentUser = localStorage.getItem('currentUser');
 let userData = JSON.parse(localStorage.getItem(currentUser + '_data')) || [];
