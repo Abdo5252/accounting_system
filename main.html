@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام المحاسبي</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>النظام المحاسبي</h1>
+
+        <!-- قسم تسجيل البيانات -->
+        <div class="input-section">
+            <h2>تسجيل بيانات جديدة</h2>
+            <div class="form-row">
+                <input type="text" id="itemName" placeholder="اسم الصنف">
+                <input type="text" id="itemCode" placeholder="كود الصنف">
+                <input type="text" id="supplierName" placeholder="اسم المورد">
+                <input type="text" id="supplierCode" placeholder="كود المورد">
+            </div>
+            <div class="form-row">
+                <input type="date" id="purchaseDate">
+                <input type="number" id="price" placeholder="السعر">
+                <input type="number" id="quantity" placeholder="الكمية">
+                <select id="unit">
+                    <option value="كيلو">كيلو</option>
+                    <option value="متر">متر</option>
+                    <option value="لتر">لتر</option>
+                    <option value="قطعة">قطعة</option>
+                </select>
+                <input type="number" id="total" placeholder="الإجمالي" readonly>
+            </div>
+            <div class="form-row">
+                <button onclick="addData()">حفظ</button>
+                <button onclick="clearFields()">فاتورة جديدة</button>
+            </div>
+        </div>
+
+        <!-- قسم البحث -->
+        <div class="search-section">
+            <h2>بحث</h2>
+            <div class="form-row">
+                <input type="text" id="searchItem" placeholder="ابحث باسم الصنف أو كود الصنف">
+                <input type="text" id="searchSupplier" placeholder="ابحث باسم المورد أو كود المورد">
+                <input type="date" id="searchDate">
+                <button onclick="searchData()">بحث</button>
+            </div>
+        </div>
+
+        <!-- جدول عرض البيانات -->
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>اسم الصنف</th>
+                    <th>كود الصنف</th>
+                    <th>اسم المورد</th>
+                    <th>كود المورد</th>
+                    <th>تاريخ الشراء</th>
+                    <th>السعر</th>
+                    <th>الكمية</th>
+                    <th>الوحدة</th>
+                    <th>الإجمالي</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- البيانات هتظهر هنا -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
