@@ -3,71 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام المحاسبي</title>
+    <title>تسجيل الدخول</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>النظام المحاسبي</h1>
+    <div class="login-container">
+        <h2>تسجيل الدخول</h2>
+        <input type="text" id="username" placeholder="اسم المستخدم">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button onclick="login()">تسجيل الدخول</button>
+        <p>ليس لديك حساب؟ <a href="#" onclick="showRegister()">إنشاء حساب جديد</a></p>
+    </div>
 
-        <!-- قسم تسجيل البيانات -->
-        <div class="input-section">
-            <h2>تسجيل بيانات جديدة</h2>
-            <div class="form-row">
-                <input type="text" id="itemName" placeholder="اسم الصنف">
-                <input type="text" id="itemCode" placeholder="كود الصنف">
-                <input type="text" id="supplierName" placeholder="اسم المورد">
-                <input type="text" id="supplierCode" placeholder="كود المورد">
-            </div>
-            <div class="form-row">
-                <input type="date" id="purchaseDate">
-                <input type="number" id="price" placeholder="السعر">
-                <input type="number" id="quantity" placeholder="الكمية">
-                <select id="unit">
-                    <option value="كيلو">كيلو</option>
-                    <option value="متر">متر</option>
-                    <option value="لتر">لتر</option>
-                    <option value="قطعة">قطعة</option>
-                </select>
-                <input type="number" id="total" placeholder="الإجمالي" readonly>
-            </div>
-            <div class="form-row">
-                <button onclick="addData()">حفظ</button>
-                <button onclick="clearFields()">فاتورة جديدة</button>
-            </div>
-        </div>
-
-        <!-- قسم البحث -->
-        <div class="search-section">
-            <h2>بحث</h2>
-            <div class="form-row">
-                <input type="text" id="searchItem" placeholder="ابحث باسم الصنف أو كود الصنف">
-                <input type="text" id="searchSupplier" placeholder="ابحث باسم المورد أو كود المورد">
-                <input type="date" id="searchDate">
-                <button onclick="searchData()">بحث</button>
-            </div>
-        </div>
-
-        <!-- جدول عرض البيانات -->
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>اسم الصنف</th>
-                    <th>كود الصنف</th>
-                    <th>اسم المورد</th>
-                    <th>كود المورد</th>
-                    <th>تاريخ الشراء</th>
-                    <th>السعر</th>
-                    <th>الكمية</th>
-                    <th>الوحدة</th>
-                    <th>الإجمالي</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- البيانات هتظهر هنا -->
-            </tbody>
-        </table>
+    <div class="login-container" id="register-container" style="display: none;">
+        <h2>إنشاء حساب جديد</h2>
+        <input type="text" id="new-username" placeholder="اسم المستخدم">
+        <input type="password" id="new-password" placeholder="كلمة المرور (8 أحرف أو أرقام)">
+        <button onclick="register()">إنشاء حساب</button>
+        <p>لديك حساب بالفعل؟ <a href="#" onclick="showLogin()">تسجيل الدخول</a></p>
     </div>
 
     <script src="script.js"></script>
