@@ -1,142 +1,182 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
+// عرض واجهة إنشاء حساب جديد
+function showRegister() {
+    document.querySelector('.login-container').style.display = 'none';
+    document.getElementById('register-container').style.display = 'block';
 }
-.login-container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    width: 350px;
-    text-align: center;
-    animation: fadeIn 0.5s ease-in-out;
+
+// عرض واجهة تسجيل الدخول
+function showLogin() {
+    document.querySelector('.login-container').style.display = 'block';
+    document.getElementById('register-container').style.display = 'none';
 }
-.login-container h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-}
-.login-container input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-.login-container input:focus {
-    border-color: #6a11cb;
-    outline: none;
-}
-.login-container button {
-    width: 100%;
-    padding: 12px;
-    background-color: #6a11cb;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-.login-container button:hover {
-    background-color: #2575fc;
-}
-.login-container p {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #666;
-}
-.login-container a {
-    color: #6a11cb;
-    text-decoration: none;
-    font-weight: bold;
-}
-.login-container a:hover {
-    text-decoration: underline;
-}
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-h1 {
-    text-align: center;
-    color: #333;
-}
-.input-section, .search-section {
-    margin-bottom: 20px;
-}
-.input-section .form-row, .search-section .form-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-}
-.input-section input, .search-section input, .input-section select {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.input-section button, .search-section button {
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-.input-section button:hover, .search-section button:hover {
-    background-color: #218838;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-table, th, td {
-    border: 1px solid #ccc;
-}
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-th {
-    background-color: #f8f9fa;
-}
-.actions button {
-    padding: 5px 10px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-.actions button.edit {
-    background-color: #ffc107;
-    color: #000;
-}
-.actions button.delete {
-    background-color: #dc3545;
-    color: #fff;
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+// إنشاء حساب جديد
+function register() {
+    const username = document.getElementById('new-username').value;
+    const password = document.getElementById('new-password').value;
+
+    if (username && password && password.length >= 8) {
+        localStorage.setItem(username, password);
+        alert('تم إنشاء الحساب بنجاح!');
+        showLogin();
+    } else {
+        alert('الرجاء إدخال اسم مستخدم وكلمة مرور صحيحة (8 أحرف أو أرقام).');
     }
 }
+
+// تسجيل الدخول
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const storedPassword = localStorage.getItem(username);
+
+    if (storedPassword === password) {
+        localStorage.setItem('currentUser', username);
+        window.location.href = 'main.html'; // الانتقال للصفحة الرئيسية
+    } else {
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة.');
+    }
+}
+
+// التحقق من تسجيل الدخول في الصفحة الرئيسية
+if (window.location.pathname.includes('main.html')) {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        window.location.href = 'index.html'; // إعادة التوجيه لصفحة تسجيل الدخول
+    }
+}
+
+// بيانات المستخدم
+let currentUser = localStorage.getItem('currentUser');
+let userData = JSON.parse(localStorage.getItem(currentUser + '_data')) || [];
+
+// حساب الإجمالي أوتوماتيكي
+document.getElementById('price').addEventListener('input', calculateTotal);
+document.getElementById('quantity').addEventListener('input', calculateTotal);
+
+function calculateTotal() {
+    const price = parseFloat(document.getElementById('price').value) || 0;
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const total = price * quantity;
+    document.getElementById('total').value = total.toFixed(2);
+}
+
+// إضافة بيانات جديدة
+function addData() {
+    const itemName = document.getElementById('itemName').value;
+    const itemCode = document.getElementById('itemCode').value;
+    const supplierName = document.getElementById('supplierName').value;
+    const supplierCode = document.getElementById('supplierCode').value;
+    const purchaseDate = document.getElementById('purchaseDate').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const quantity = parseFloat(document.getElementById('quantity').value);
+    const unit = document.getElementById('unit').value;
+    const total = parseFloat(document.getElementById('total').value);
+
+    if (itemName && itemCode && supplierName && supplierCode && purchaseDate && price && quantity && unit) {
+        const newData = {
+            itemName,
+            itemCode,
+            supplierName,
+            supplierCode,
+            purchaseDate,
+            price,
+            quantity,
+            unit,
+            total
+        };
+
+        userData.push(newData);
+        localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
+        displayData();
+        clearFields();
+    } else {
+        alert('الرجاء ملء جميع الحقول.');
+    }
+}
+
+// عرض البيانات في الجدول
+function displayData(data = userData) {
+    const tableBody = document.querySelector('#dataTable tbody');
+    tableBody.innerHTML = '';
+
+    data.forEach((item, index) => {
+        const row = `
+            <tr>
+                <td>${item.itemName}</td>
+                <td>${item.itemCode}</td>
+                <td>${item.supplierName}</td>
+                <td>${item.supplierCode}</td>
+                <td>${item.purchaseDate}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unit}</td>
+                <td>${item.total.toFixed(2)}</td>
+                <td class="actions">
+                    <button class="edit" onclick="editData(${index})">تعديل</button>
+                    <button class="delete" onclick="deleteData(${index})">حذف</button>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
+
+// مسح الحقول
+function clearFields() {
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemCode').value = '';
+    document.getElementById('supplierName').value = '';
+    document.getElementById('supplierCode').value = '';
+    document.getElementById('purchaseDate').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('quantity').value = '';
+    document.getElementById('unit').value = 'كيلو';
+    document.getElementById('total').value = '';
+}
+
+// البحث في البيانات
+function searchData() {
+    const searchItem = document.getElementById('searchItem').value.toLowerCase();
+    const searchSupplier = document.getElementById('searchSupplier').value.toLowerCase();
+    const date = document.getElementById('searchDate').value;
+
+    const filteredData = userData.filter(item =>
+        (searchItem === '' || item.itemName.toLowerCase().includes(searchItem) || item.itemCode.toLowerCase().includes(searchItem)) &&
+        (searchSupplier === '' || item.supplierName.toLowerCase().includes(searchSupplier) || item.supplierCode.toLowerCase().includes(searchSupplier)) &&
+        (date === '' || item.purchaseDate.includes(date))
+    );
+    displayData(filteredData);
+}
+
+// تعديل البيانات
+function editData(index) {
+    const item = userData[index];
+    document.getElementById('itemName').value = item.itemName;
+    document.getElementById('itemCode').value = item.itemCode;
+    document.getElementById('supplierName').value = item.supplierName;
+    document.getElementById('supplierCode').value = item.supplierCode;
+    document.getElementById('purchaseDate').value = item.purchaseDate;
+    document.getElementById('price').value = item.price;
+    document.getElementById('quantity').value = item.quantity;
+    document.getElementById('unit').value = item.unit;
+    document.getElementById('total').value = item.total;
+
+    // حذف البيانات القديمة
+    userData.splice(index, 1);
+    localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
+    displayData();
+}
+
+// حذف البيانات
+function deleteData(index) {
+    if (confirm('هل أنت متأكد من حذف هذه البيانات؟')) {
+        userData.splice(index, 1);
+        localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
+        displayData();
+    }
+}
+
+// عرض البيانات عند تحميل الصفحة
+displayData();
