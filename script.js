@@ -39,6 +39,14 @@ function login() {
     }
 }
 
+// التحقق من تسجيل الدخول في الصفحة الرئيسية
+if (window.location.pathname.includes('main.html')) {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        window.location.href = 'index.html'; // إعادة التوجيه لصفحة تسجيل الدخول
+    }
+}
+
 // بيانات المستخدم
 let currentUser = localStorage.getItem('currentUser');
 let userData = JSON.parse(localStorage.getItem(currentUser + '_data')) || [];
