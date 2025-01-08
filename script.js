@@ -1,55 +1,28 @@
-// عرض واجهة إنشاء حساب جديد
-function showRegister() {
-    document.querySelector('.login-container').style.display = 'none';
-    document.getElementById('register-container').style.display = 'block';
-}
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onValue, remove, update } from "firebase/database";
 
-// عرض واجهة تسجيل الدخول
-function showLogin() {
-    document.querySelector('.login-container').style.display = 'block';
-    document.getElementById('register-container').style.display = 'none';
-}
-
-// إنشاء حساب جديد
-function register() {
-    const username = document.getElementById('new-username').value;
-    const password = document.getElementById('new-password').value;
-
-    if (username && password && password.length >= 8) {
-        localStorage.setItem(username, password);
-        alert('تم إنشاء الحساب بنجاح!');
-        showLogin();
-    } else {
-        alert('الرجاء إدخال اسم مستخدم وكلمة مرور صحيحة (8 أحرف أو أرقام).');
-    }
-}
-
-// تسجيل الدخول
-function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    const storedPassword = localStorage.getItem(username);
-
-    if (storedPassword === password) {
-        localStorage.setItem('currentUser', username);
-        window.location.href = 'main.html'; // الانتقال للصفحة الرئيسية
-    } else {
-        alert('اسم المستخدم أو كلمة المرور غير صحيحة.');
-    }
-}
-
-// التحقق من تسجيل الدخول في الصفحة الرئيسية
-if (window.location.pathname.includes('main.html')) {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-        window.location.href = 'index.html'; // إعادة التوجيه لصفحة تسجيل الدخول
-    }
-}
+// تهيئة Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBGrXWZIIDnD4yx031-_gh2QbQNh6WdrKE",
+    authDomain: "accounting-system-2526b.firebaseapp.com",
+    databaseURL: "https://accounting-system-2526b-default-rtdb.firebaseio.com",
+    projectId: "accounting-system-2526b",
+    storageBucket: "accounting-system-2526b.firebasestorage.app",
+    messagingSenderId: "334713604535",
+    appId: "1:334713604535:web:6c121b85f41eff32998032"
+};
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 // بيانات المستخدم
 let currentUser = localStorage.getItem('currentUser');
-let userData = JSON.parse(localStorage.getItem(currentUser + '_data')) || [];
+
+// التحقق من تسجيل الدخول في الصفحة الرئيسية
+if (!currentUser) {
+    window.location.href = 'index.html'; // إعادة التوجيه لصفحة تسجيل الدخول
+} else {
+    displayData(); // عرض البيانات عند تحميل الصفحة
+}
 
 // حساب الإجمالي أوتوماتيكي
 document.getElementById('price').addEventListener('input', calculateTotal);
@@ -87,9 +60,9 @@ function addData() {
             total
         };
 
-        userData.push(newData);
-        localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
-        displayData();
+        // إضافة البيانات لقاعدة البيانات
+        push(ref(database, 'invoices/' + currentUser), newData);
+        alert('تم إضافة البيانات بنجاح!');
         clearFields();
     } else {
         alert('الرجاء ملء جميع الحقول.');
@@ -97,29 +70,34 @@ function addData() {
 }
 
 // عرض البيانات في الجدول
-function displayData(data = userData) {
-    const tableBody = document.querySelector('#dataTable tbody');
-    tableBody.innerHTML = '';
+function displayData() {
+    const invoicesRef = ref(database, 'invoices/' + currentUser);
+    onValue(invoicesRef, (snapshot) => {
+        const data = snapshot.val();
+        const tableBody = document.querySelector('#dataTable tbody');
+        tableBody.innerHTML = '';
 
-    data.forEach((item, index) => {
-        const row = `
-            <tr>
-                <td>${item.itemName}</td>
-                <td>${item.itemCode}</td>
-                <td>${item.supplierName}</td>
-                <td>${item.supplierCode}</td>
-                <td>${item.purchaseDate}</td>
-                <td>${item.price.toFixed(2)}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unit}</td>
-                <td>${item.total.toFixed(2)}</td>
-                <td class="actions">
-                    <button class="edit" onclick="editData(${index})">تعديل</button>
-                    <button class="delete" onclick="deleteData(${index})">حذف</button>
-                </td>
-            </tr>
-        `;
-        tableBody.innerHTML += row;
+        for (let key in data) {
+            const item = data[key];
+            const row = `
+                <tr>
+                    <td>${item.itemName}</td>
+                    <td>${item.itemCode}</td>
+                    <td>${item.supplierName}</td>
+                    <td>${item.supplierCode}</td>
+                    <td>${item.purchaseDate}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unit}</td>
+                    <td>${item.total.toFixed(2)}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editData('${key}')">تعديل</button>
+                        <button class="delete" onclick="deleteData('${key}')">حذف</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        }
     });
 }
 
@@ -142,41 +120,114 @@ function searchData() {
     const searchSupplier = document.getElementById('searchSupplier').value.toLowerCase();
     const date = document.getElementById('searchDate').value;
 
-    const filteredData = userData.filter(item =>
-        (searchItem === '' || item.itemName.toLowerCase().includes(searchItem) || item.itemCode.toLowerCase().includes(searchItem)) &&
-        (searchSupplier === '' || item.supplierName.toLowerCase().includes(searchSupplier) || item.supplierCode.toLowerCase().includes(searchSupplier)) &&
-        (date === '' || item.purchaseDate.includes(date))
-    );
-    displayData(filteredData);
+    const invoicesRef = ref(database, 'invoices/' + currentUser);
+    onValue(invoicesRef, (snapshot) => {
+        const data = snapshot.val();
+        const filteredData = [];
+
+        for (let key in data) {
+            const item = data[key];
+            if (
+                (searchItem === '' || item.itemName.toLowerCase().includes(searchItem) || item.itemCode.toLowerCase().includes(searchItem)) &&
+                (searchSupplier === '' || item.supplierName.toLowerCase().includes(searchSupplier) || item.supplierCode.toLowerCase().includes(searchSupplier)) &&
+                (date === '' || item.purchaseDate.includes(date))
+            ) {
+                filteredData.push({ ...item, key });
+            }
+        }
+
+        displayFilteredData(filteredData);
+    });
+}
+
+// عرض البيانات المفلترة
+function displayFilteredData(data) {
+    const tableBody = document.querySelector('#dataTable tbody');
+    tableBody.innerHTML = '';
+
+    data.forEach((item) => {
+        const row = `
+            <tr>
+                <td>${item.itemName}</td>
+                <td>${item.itemCode}</td>
+                <td>${item.supplierName}</td>
+                <td>${item.supplierCode}</td>
+                <td>${item.purchaseDate}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unit}</td>
+                <td>${item.total.toFixed(2)}</td>
+                <td class="actions">
+                    <button class="edit" onclick="editData('${item.key}')">تعديل</button>
+                    <button class="delete" onclick="deleteData('${item.key}')">حذف</button>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
 }
 
 // تعديل البيانات
-function editData(index) {
-    const item = userData[index];
-    document.getElementById('itemName').value = item.itemName;
-    document.getElementById('itemCode').value = item.itemCode;
-    document.getElementById('supplierName').value = item.supplierName;
-    document.getElementById('supplierCode').value = item.supplierCode;
-    document.getElementById('purchaseDate').value = item.purchaseDate;
-    document.getElementById('price').value = item.price;
-    document.getElementById('quantity').value = item.quantity;
-    document.getElementById('unit').value = item.unit;
-    document.getElementById('total').value = item.total;
+function editData(key) {
+    const itemRef = ref(database, 'invoices/' + currentUser + '/' + key);
+    onValue(itemRef, (snapshot) => {
+        const item = snapshot.val();
+        document.getElementById('itemName').value = item.itemName;
+        document.getElementById('itemCode').value = item.itemCode;
+        document.getElementById('supplierName').value = item.supplierName;
+        document.getElementById('supplierCode').value = item.supplierCode;
+        document.getElementById('purchaseDate').value = item.purchaseDate;
+        document.getElementById('price').value = item.price;
+        document.getElementById('quantity').value = item.quantity;
+        document.getElementById('unit').value = item.unit;
+        document.getElementById('total').value = item.total;
 
-    // حذف البيانات القديمة
-    userData.splice(index, 1);
-    localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
-    displayData();
+        // تغيير زر الحفظ لتحديث البيانات
+        const saveButton = document.getElementById('saveButton');
+        saveButton.textContent = 'تحديث';
+        saveButton.onclick = () => updateData(key);
+    });
 }
 
-// حذف البيانات
-function deleteData(index) {
-    if (confirm('هل أنت متأكد من حذف هذه البيانات؟')) {
-        userData.splice(index, 1);
-        localStorage.setItem(currentUser + '_data', JSON.stringify(userData));
+// تحديث البيانات
+function updateData(key) {
+    const itemName = document.getElementById('itemName').value;
+    const itemCode = document.getElementById('itemCode').value;
+    const supplierName = document.getElementById('supplierName').value;
+    const supplierCode = document.getElementById('supplierCode').value;
+    const purchaseDate = document.getElementById('purchaseDate').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const quantity = parseFloat(document.getElementById('quantity').value);
+    const unit = document.getElementById('unit').value;
+    const total = parseFloat(document.getElementById('total').value);
+
+    if (itemName && itemCode && supplierName && supplierCode && purchaseDate && price && quantity && unit) {
+        const updatedData = {
+            itemName,
+            itemCode,
+            supplierName,
+            supplierCode,
+            purchaseDate,
+            price,
+            quantity,
+            unit,
+            total
+        };
+
+        update(ref(database, 'invoices/' + currentUser + '/' + key), updatedData);
+        alert('تم تحديث البيانات بنجاح!');
+        clearFields();
         displayData();
+    } else {
+        alert('الرجاء ملء جميع الحقول.');
     }
 }
 
-// عرض البيانات عند تحميل الصفحة
-displayData();
+// حذف البيانات
+function deleteData(key) {
+    if (confirm('هل أنت متأكد من حذف هذه البيانات؟')) {
+        remove(ref(database, 'invoices/' + currentUser + '/' + key));
+        alert('تم حذف البيانات بنجاح!');
+        displayData();
+    }
+}
