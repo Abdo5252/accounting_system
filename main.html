@@ -14,16 +14,16 @@
         <div class="input-section">
             <h2>تسجيل بيانات جديدة</h2>
             <div class="form-row">
-                <input type="text" id="itemName" placeholder="اسم الصنف">
-                <input type="text" id="itemCode" placeholder="كود الصنف">
-                <input type="text" id="supplierName" placeholder="اسم المورد">
-                <input type="text" id="supplierCode" placeholder="كود المورد">
+                <input type="text" id="itemName" placeholder="اسم الصنف" required>
+                <input type="text" id="itemCode" placeholder="كود الصنف" required>
+                <input type="text" id="supplierName" placeholder="اسم المورد" required>
+                <input type="text" id="supplierCode" placeholder="كود المورد" required>
             </div>
             <div class="form-row">
-                <input type="date" id="purchaseDate">
-                <input type="number" id="price" placeholder="السعر">
-                <input type="number" id="quantity" placeholder="الكمية">
-                <select id="unit">
+                <input type="date" id="purchaseDate" required>
+                <input type="number" id="price" placeholder="السعر" required>
+                <input type="number" id="quantity" placeholder="الكمية" required>
+                <select id="unit" required>
                     <option value="كيلو">كيلو</option>
                     <option value="متر">متر</option>
                     <option value="لتر">لتر</option>
@@ -32,7 +32,7 @@
                 <input type="number" id="total" placeholder="الإجمالي" readonly>
             </div>
             <div class="form-row">
-                <button onclick="addData()">حفظ</button>
+                <button id="saveButton" onclick="addData()">حفظ</button>
                 <button onclick="clearFields()">فاتورة جديدة</button>
             </div>
         </div>
@@ -65,11 +65,11 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- البيانات هتظهر هنا -->
+                <!-- البيانات ستظهر هنا -->
             </tbody>
         </table>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
